@@ -54,7 +54,6 @@ class CommonStock(object):
         self.parValue = int(parval)
         self.lastDividend = int(dividend)
         self.trades = None
-        self.__valid = True
     
     def recordTrade(self, quant, price, date, ttype ):
         ''' Append a trade to the trades list
@@ -94,20 +93,6 @@ class CommonStock(object):
                 acount += thistrade.quantity
         return int(float(asum)/float(acount))
     
-def allShareIndex( allshares ):
-    ''' Given a list of shares calculate the All Share Index
-    '''
-    value = 1.0
-    acount = 0
-    
-    for thistock in allshares:
-        if thistock.trades == None:
-            continue
-        value *= thistock.stockPrice()
-        acount += 1  
-    retval = pow(value,(1/float(acount)) )
-    return retval
-
 class PreferredStock( CommonStock ):
     ''' The class of preferred stock
     '''
@@ -123,7 +108,19 @@ class PreferredStock( CommonStock ):
         ''' Calculate the yield
         '''
         return self.fixedDividend*self.parValue/float(tickerPrice)
+
+def allShareIndex( allshares ):
+    ''' Given a list of shares calculate the All Share Index
+    '''
+    value = 1.0
+    acount = 0
     
+    for thistock in allshares:
+        if thistock.trades == None:
+            continue
+        value *= thistock.stockPrice()
+        acount += 1  
+    return pow(value,(1/float(acount)) )    
         
 if __name__ == '__main__':
     stocks = [ 
@@ -133,12 +130,13 @@ if __name__ == '__main__':
               PreferredStock( 'GIN', 100, 8, .02),
               CommonStock('JOE', 250, 15)
               ]
-    i = 1
+
+    index = 1
     for mystock in stocks:
-        mystock.recordTrade(10*i, 20*i, datetime.datetime.now() - datetime.timedelta(minutes=i), BUY) 
-        mystock.recordTrade(13*i, 6*i, datetime.datetime.now() - datetime.timedelta(minutes=(i+1)), BUY) 
-        mystock.recordTrade(31*i, 55*i, datetime.datetime.now() - datetime.timedelta(minutes=(i+3)), SELL)       
-        i += 1  
+        mystock.recordTrade(10*index, 20*index, datetime.datetime.now() - datetime.timedelta(minutes=index), BUY) 
+        mystock.recordTrade(13*index, 6*index, datetime.datetime.now() - datetime.timedelta(minutes=(index+1)), BUY) 
+        mystock.recordTrade(31*index, 55*index, datetime.datetime.now() - datetime.timedelta(minutes=(index+3)), SELL)       
+        index += 1 
         
     print "Yeild for %s %s" %(stocks[3].symbol, stocks[3].name), stocks[3].currentYield( 100 )
     print "Yeild for %s %s" %(stocks[2].symbol, stocks[2].name), stocks[2].currentYield( 100 )
