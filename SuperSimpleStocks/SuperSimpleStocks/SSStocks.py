@@ -7,7 +7,6 @@ Super Simple Stocks
 '''
 from datetime import *
 import datetime
-from scipy.cluster.hierarchy import dendrogram
 import math
 
 #Transaction types
